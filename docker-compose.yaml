@@ -1,0 +1,49 @@
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:$GITLAB_TAG
+    container_name: gitlab
+    restart: always
+    hostname: $GITLAB_HOSTNAME
+    environment:
+      GITLAB_OMNIBUS_CONFIG:
+        "external_url 'http://$GITLAB_HOSTNAME'; gitlab_rails['initial_shared_runners_registration_token'] = $GITLAB_REGISTRATION_TOKEN"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./volumes/gitlab/config:/etc/gitlab"
+      - "./volumes/gitlab/logs:/var/log/gitlab"
+      - "./volumes/gitlab/data:/var/opt/gitlab"
+    shm_size: "256m"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/-/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 6
+  runner1:
+    image: gitlab/gitlab-runner:$RUNNER_TAG
+    container_name: runner1
+    restart: always
+    hostname: $RUNNER_HOSTNAME
+    environment:
+      - CI_SERVER_URL=http://$GITLAB_HOSTNAME
+      - REGISTRATION_TOKEN=$GITLAB_REGISTRATION_TOKEN
+      - RUNNER_NAME=runner1
+      - RUNNER_EXECUTOR=docker
+      - DOCKER_IMAGE=alpine:latest
+      - REGISTER_NON_INTERACTIVE=true
+    volumes:
+      - "./volumes/runner:/etc/gitlab-runner"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    depends_on:
+      gitlab:
+        condition: service_healthy
+  web:
+    image: httpd:$APACHE_TAG
+    container_name: web
+    restart: always
+    hostname: $WEBSERVER_HOSTNAME
+    ports:
+      - "3001:80"
+    volumes:
+      - "./volumes/web/www:/usr/local/apache2/htdocs"
