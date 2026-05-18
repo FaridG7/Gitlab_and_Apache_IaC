@@ -6,7 +6,7 @@ services:
     hostname: $GITLAB_HOSTNAME
     environment:
       GITLAB_OMNIBUS_CONFIG:
-        "external_url 'http://$GITLAB_HOSTNAME'; gitlab_rails['initial_shared_runners_registration_token'] = $GITLAB_REGISTRATION_TOKEN"
+        external_url 'http://$GITLAB_HOSTNAME'; 
     ports:
       - "80:80"
       - "443:443"
@@ -25,13 +25,6 @@ services:
     container_name: runner1
     restart: always
     hostname: $RUNNER_HOSTNAME
-    environment:
-      - CI_SERVER_URL=http://$GITLAB_HOSTNAME
-      - REGISTRATION_TOKEN=$GITLAB_REGISTRATION_TOKEN
-      - RUNNER_NAME=runner1
-      - RUNNER_EXECUTOR=docker
-      - DOCKER_IMAGE=alpine:latest
-      - REGISTER_NON_INTERACTIVE=true
     volumes:
       - "./volumes/runner:/etc/gitlab-runner"
       - "/var/run/docker.sock:/var/run/docker.sock"
