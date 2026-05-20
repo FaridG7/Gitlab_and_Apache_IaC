@@ -5,8 +5,7 @@ services:
     restart: always
     hostname: $GITLAB_HOSTNAME
     environment:
-      GITLAB_OMNIBUS_CONFIG:
-        external_url 'http://$GITLAB_HOSTNAME'; 
+      GITLAB_OMNIBUS_CONFIG: external_url 'http://$GITLAB_HOSTNAME';
     ports:
       - "80:80"
       - "443:443"
@@ -29,11 +28,17 @@ services:
     volumes:
       - "./volumes/runner:/etc/gitlab-runner"
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./dockerfiles/runner/setup-ssh-prerequisite.sh:/usr/local/bin/copy-ssh-prerequisite.sh:ro"
+      - "./dockerfiles/runner/init-runner.sh:/usr/local/bin/init-runner.sh:ro"
+    entrypoint: ["/usr/local/bin/init-runner.sh"]
+    environment:
+      - TARGET_HOSTNAME=${WEBSERVER_HOSTNAME}
     depends_on:
-      gitlab:
-        condition: service_healthy
+      - web
   web:
-    image: httpd:$APACHE_TAG
+    build:
+      context: ./dockerfiles/webserver/
+      dockerfile: Dockerfile
     container_name: web
     restart: always
     hostname: $WEBSERVER_HOSTNAME
