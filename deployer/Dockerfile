@@ -17,18 +17,10 @@ RUN apk update && apk add --no-cache openssh-server shadow openssl rsync
 RUN ssh-keygen -A
 
 # Create a random password
-RUN openssl rand -base64 16 > /gitlab-runner-passwd
+RUN openssl rand -base64 16 > /initial-root-password
 
-# Create the 'gitlab-runner' user
-RUN adduser -s /bin/sh -D gitlab-runner && echo "gitlab-runner:$(cat /gitlab-runner-passwd)" | chpasswd
-
-# Create deployer group and add gitlab-runner user to it
-RUN addgroup -g 2000 deployers && addgroup gitlab-runner deployers
-
-# Create the webserver content directory and set correct permissions
-RUN mkdir -p /home/gitlab-runner/www && \
-    chown -R root:deployers /home/gitlab-runner/www && \
-    chmod 2770 /home/gitlab-runner/www
+# Change root's password
+RUN echo "root:$(cat /initial-root-password)" | chpasswd
 
 EXPOSE 22
 

@@ -33,8 +33,7 @@ services:
     networks:
       - gitlab_net
   web:
-    build:
-      context: ./web/
+    image: httpd:alpine
     container_name: web
     restart: always
     hostname: $WEBSERVER_HOSTNAME
@@ -55,7 +54,7 @@ services:
     volumes:
       - www:/home/gitlab-runner/www
       - deployer_ssh_configs:/etc/ssh
-      - deployer_ssh:/home/gitlab-runner/.ssh
+      - deployer_ssh:/root/.ssh
     networks:
       - webservers_net
       - gitlab_net
