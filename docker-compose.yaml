@@ -20,25 +20,22 @@ services:
       interval: 15s
       timeout: 10s
       retries: 12
+    networks:
+      - gitlab_net
   runner1:
     image: gitlab/gitlab-runner:$RUNNER_TAG
     container_name: runner1
     restart: always
     hostname: $RUNNER_HOSTNAME
     volumes:
-      - "./volumes/runner:/etc/gitlab-runner"
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./dockerfiles/runner/setup-ssh-prerequisite.sh:/usr/local/bin/copy-ssh-prerequisite.sh:ro"
-      - "./dockerfiles/runner/init-runner.sh:/usr/local/bin/init-runner.sh:ro"
-    entrypoint: ["/usr/local/bin/init-runner.sh"]
-    environment:
-      - TARGET_HOSTNAME=${WEBSERVER_HOSTNAME}
-    depends_on:
-      - web
+      - "./volumes/runner/config:/etc/gitlab-runner/"
+      - "./volumes/runner/key:/root/.ssh/id_ed25519"
+      - "./volumes/runner/known_hosts:/root/.ssh/known_hosts"
+    networks:
+      - gitlab_net
   web:
-    build:
-      context: ./dockerfiles/webserver/
-      dockerfile: Dockerfile
+    image: httpd:alpine
     container_name: web
     restart: always
     hostname: $WEBSERVER_HOSTNAME
@@ -46,3 +43,23 @@ services:
       - "3001:80"
     volumes:
       - "./volumes/web/www:/usr/local/apache2/htdocs"
+    networks:
+      - webservers_net
+  deployer:
+    build:
+      context: ./deployer/
+    container_name: deployer
+    restart: always
+    hostname: $DEPLOYER_HOSTNAME
+    volumes:
+      - "./volumes/web/www:/opt/webserver-content/"
+      - "./volumes/deployer/authorized_keys:/home/gitlab-runner/.ssh/authorized_keys"
+      - "./volumes/deployer/key:/etc/ssh/ssh_host_ed25519_key"
+      - "./volumes/deployer/key.pub:/etc/ssh/ssh_host_ed25519_key.pub"
+    networks:
+      - webservers_net
+      - gitlab_net
+
+networks:
+  gitlab_net:
+  webservers_net:
