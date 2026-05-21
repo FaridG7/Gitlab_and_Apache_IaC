@@ -11,7 +11,10 @@ RUN ALPINE_VERSION=$(cat /etc/alpine-release | cut -d'.' -f1-2) && \
 	#echo "http://repo.iut.ac.ir/repo/alpine/v${ALPINE_VERSION}/community" >> /etc/apk/repositories
 
 # Install necessary packages: OpenSSH for SSH server, openssh-client for SSH commands, and shadow for user management.
-RUN apk update && apk add --no-cache openssh-server shadow openssl
+RUN apk update && apk add --no-cache openssh-server shadow openssl rsync
+
+# Generate the host keys
+RUN ssh-keygen -A
 
 # Create a random password
 RUN openssl rand -base64 16 > /gitlab-runner-passwd

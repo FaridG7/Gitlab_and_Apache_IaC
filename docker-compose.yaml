@@ -54,8 +54,6 @@ services:
       - "2222:22"
     volumes:
       - "./volumes/web/www:/home/gitlab-runner/www/"
-      - "./volumes/deployer/gitlab-runner/ssh/:/home/gitlab-runner/.ssh/"
-      - "./volumes/deployer/ssh/:/etc/ssh/"
     networks:
       - webservers_net
       - gitlab_net
