@@ -54,8 +54,8 @@ services:
       - "2222:22"
     volumes:
       - www:/home/gitlab-runner/www
-      - ssh_configs:/etc/ssh
-      - deployer_authorized_keys:/home/gitlab-runner/.ssh/authorized_keys
+      - deployer_ssh_configs:/etc/ssh
+      - deployer_ssh:/home/gitlab-runner/.ssh
     networks:
       - webservers_net
       - gitlab_net
@@ -70,5 +70,5 @@ volumes:
   gitlab_data:
   runner1_config:
   www:
-  ssh_configs:
-  deployer_authorized_keys:
+  deployer_ssh_configs:
+  deployer_ssh:
