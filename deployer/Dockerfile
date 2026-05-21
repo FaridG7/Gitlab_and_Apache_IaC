@@ -25,11 +25,10 @@ RUN adduser -s /bin/sh -D gitlab-runner && echo "gitlab-runner:$(cat /gitlab-run
 # Create deployer group and add gitlab-runner user to it
 RUN addgroup -g 2000 deployers && addgroup gitlab-runner deployers
 
-# Create the webserver content directory and set correct permissions
-RUN mkdir -p /home/gitlab-runner/www && \
-    chown -R root:deployers /home/gitlab-runner/www && \
-    chmod 2770 /home/gitlab-runner/www
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 22
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/sbin/sshd", "-D"]
