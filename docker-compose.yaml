@@ -30,8 +30,6 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./volumes/runner/config:/etc/gitlab-runner/"
-      - "./volumes/runner/key:/root/.ssh/id_ed25519"
-      - "./volumes/runner/known_hosts:/root/.ssh/known_hosts"
     networks:
       - gitlab_net
   web:
@@ -52,11 +50,10 @@ services:
     container_name: deployer
     restart: always
     hostname: $DEPLOYER_HOSTNAME
+    ports:
+      - "2222:22"
     volumes:
       - "./volumes/web/www:/home/gitlab-runner/www/"
-      - "./volumes/deployer/authorized_keys:/home/gitlab-runner/.ssh/authorized_keys"
-      - "./volumes/deployer/key:/etc/ssh/ssh_host_ed25519_key"
-      - "./volumes/deployer/key.pub:/etc/ssh/ssh_host_ed25519_key.pub"
     networks:
       - webservers_net
       - gitlab_net
