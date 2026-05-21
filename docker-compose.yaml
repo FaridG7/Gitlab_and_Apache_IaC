@@ -64,7 +64,7 @@ networks:
   gitlab_net:
   webservers_net:
 
-voluems:
+volumes:
   gitlab_config:
   gitlab_logs:
   gitlab_data:
