@@ -13,13 +13,21 @@ RUN ALPINE_VERSION=$(cat /etc/alpine-release | cut -d'.' -f1-2) && \
 # Install necessary packages: OpenSSH for SSH server, openssh-client for SSH commands, and shadow for user management.
 RUN apk update && apk add --no-cache openssh-server shadow openssl
 
-# Create the 'gitlab-runner' user and group
+# Create the 'gitlab-runner' user
 RUN adduser -s /bin/sh -D gitlab-runner && echo "gitlab-runner:$(openssl rand -base64 16)" | chpasswd
+
+# Create deployer group and add gitlab-runner user to it
+RUN addgroup -g 2000 deployers && addgroup gitlab-runner deployers
 
 # Create the ssh config directory for the gitlab-runner user
 RUN mkdir -p /home/gitlab-runner/.ssh && \
     chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/.ssh && \
     chmod 700 /home/gitlab-runner/.ssh
+
+# Create the webserver content directory and set correct permissions
+RUN mkdir -p /home/gitlab-runner/www && \
+    chown -R root:deployers /home/gitlab-runner/www && \
+    chmod 2770 /home/gitlab-runner/www
 
 # Copy an entrypoint script that fixes the /home/gitlab-runner/.ssh ownership
 COPY entrypoint.sh /entrypoint.sh

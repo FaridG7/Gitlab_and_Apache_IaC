@@ -35,7 +35,8 @@ services:
     networks:
       - gitlab_net
   web:
-    image: httpd:alpine
+    build:
+      context: ./web/
     container_name: web
     restart: always
     hostname: $WEBSERVER_HOSTNAME
@@ -52,7 +53,7 @@ services:
     restart: always
     hostname: $DEPLOYER_HOSTNAME
     volumes:
-      - "./volumes/web/www:/opt/webserver-content/"
+      - "./volumes/web/www:/home/gitlab-runner/www/"
       - "./volumes/deployer/authorized_keys:/home/gitlab-runner/.ssh/authorized_keys"
       - "./volumes/deployer/key:/etc/ssh/ssh_host_ed25519_key"
       - "./volumes/deployer/key.pub:/etc/ssh/ssh_host_ed25519_key.pub"
