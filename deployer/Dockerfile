@@ -11,15 +11,21 @@ RUN ALPINE_VERSION=$(cat /etc/alpine-release | cut -d'.' -f1-2) && \
 	#echo "http://repo.iut.ac.ir/repo/alpine/v${ALPINE_VERSION}/community" >> /etc/apk/repositories
 
 # Install necessary packages: OpenSSH for SSH server, openssh-client for SSH commands, and shadow for user management.
-RUN apk update && apk add --no-cache openssh-server shadow
+RUN apk update && apk add --no-cache openssh-server shadow openssl
 
 # Create the 'gitlab-runner' user and group
-RUN adduser -s /bin/sh -D gitlab-runner
+RUN adduser -s /bin/sh -D gitlab-runner && echo "gitlab-runner:$(openssl rand -base64 16)" | chpasswd
 
 # Create the ssh config directory for the gitlab-runner user
 RUN mkdir -p /home/gitlab-runner/.ssh && \
-    chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/.ssh
+    chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/.ssh && \
+    chmod 700 /home/gitlab-runner/.ssh
+
+# Copy an entrypoint script that fixes the /home/gitlab-runner/.ssh ownership
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 22
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/sbin/sshd", "-D"]

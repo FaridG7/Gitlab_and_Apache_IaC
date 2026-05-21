@@ -75,7 +75,7 @@ load_env_file
 mkdir -p "$RUNNER_KEY_DIR" "$DEPLOYER_KEY_DIR"
 
 log "Generating runner SSH key..."
-generate_ssh_keypair "$RUNNER_KEY" "gitlab runner"
+generate_ssh_keypair "$RUNNER_KEY" "gitlab-runner"
 
 log "Generating deployer SSH key..."
 generate_ssh_keypair "$DEPLOYER_KEY" "deployer"
