@@ -11,9 +11,9 @@ services:
       - "443:443"
       - "22:22"
     volumes:
-      - "./volumes/gitlab/config:/etc/gitlab"
-      - "./volumes/gitlab/logs:/var/log/gitlab"
-      - "./volumes/gitlab/data:/var/opt/gitlab"
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
     shm_size: "256m"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/-/health"]
@@ -29,7 +29,7 @@ services:
     hostname: $RUNNER_HOSTNAME
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./volumes/runner/config:/etc/gitlab-runner/"
+      - runner1_config:/etc/gitlab-runner
     networks:
       - gitlab_net
   web:
@@ -41,7 +41,7 @@ services:
     ports:
       - "3001:80"
     volumes:
-      - "./volumes/web/www:/usr/local/apache2/htdocs"
+      - www:/usr/local/apache2/htdocs
     networks:
       - webservers_net
   deployer:
@@ -53,7 +53,9 @@ services:
     ports:
       - "2222:22"
     volumes:
-      - "./volumes/web/www:/home/gitlab-runner/www/"
+      - www:/home/gitlab-runner/www
+      - ssh_configs:/etc/ssh
+      - deployer_authorized_keys:/home/gitlab-runner/.ssh/authorized_keys
     networks:
       - webservers_net
       - gitlab_net
@@ -61,3 +63,12 @@ services:
 networks:
   gitlab_net:
   webservers_net:
+
+voluems:
+  gitlab_config:
+  gitlab_logs:
+  gitlab_data:
+  runner1_config:
+  www:
+  ssh_configs:
+  deployer_authorized_keys:
