@@ -1,4 +1,5 @@
-FROM alpine:3.23.4
+ARG TAG
+FROM alpine:${TAG}
 
 # Add Liara mirrors (if not in iran, comment them)
 RUN ALPINE_VERSION=$(cat /etc/alpine-release | cut -d'.' -f1-2) && \

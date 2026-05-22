@@ -35,6 +35,8 @@ services:
   web:
     build:
       context: ./web/
+      args:
+        TAG: $WEBSERVER_TAG
     container_name: web
     restart: always
     hostname: $WEBSERVER_HOSTNAME
@@ -47,6 +49,8 @@ services:
   deployer:
     build:
       context: ./deployer/
+      args:
+        TAG: $DEPLOYER_TAG
     container_name: deployer
     restart: always
     hostname: $DEPLOYER_HOSTNAME
