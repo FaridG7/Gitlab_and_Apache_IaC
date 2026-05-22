@@ -1,4 +1,4 @@
-# DevOps_Home_Lab-GitLab_CICD-Infrastructure
+# DevOps Home Lab: GitLab CI/CD (Infrastructure)
 
 This repository contains the `Dockerfile` and `docker-compose.yml` configurations used during my DevOps practices. 
 
