@@ -1,4 +1,4 @@
-# DevOps-Practice-1-Infrastructure
+# DevOps_Home_Lab-GitLab_CICD-Infrastructure
 
 This repository contains the `Dockerfile` and `docker-compose.yml` configurations used during my DevOps practices. 
 
